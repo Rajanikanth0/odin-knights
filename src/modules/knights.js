@@ -1,38 +1,32 @@
-function knightMoves(current, target) {
+function knightMoves(start, target) {
   const [tx, ty] = target;
+  const queue = [[start, [start]]]
+  const visited = new Set([start.toString()]);
 
-  const queue = [current];
-  const tempArr = [];
-  let count = 0;
+  const OFFSETS = [
+    [2, 1], [2, -1], [1, 2], [1, -2],
+    [-2, 1], [-2, -1], [-1, 2], [-1, -2]
+  ];
 
-  while (queue.length) {
-    const [x, y] = queue.shift();
-    
-    if (
-      x < 0 || y < 0
-      || x > 7 || y > 7
-      || tempArr.some(([a, b]) => a == x && b == y)
-    ) continue;
+  while (queue.length > 0) {
+    const [[cx, cy], path] = queue.shift();
 
-    console.log(tempArr);
-    tempArr.push([x, y]);
+    if (cx === tx && cy === ty) {
+      console.log(`You made it in ${path.length -1} moves! Here's your path:`);
+      path.forEach((move) => console.log(move));
 
-    if (x == tx && y == ty) {
-      console.log("target: ", [x, y]);
-      return;
+      return path;
     }
 
-    queue.push(
-      [x + 2, y + 1],
-      [x + 2, y - 1],
-      [x + 1, y + 2],
-      [x + 1, y - 2],
+    for (const [dx, dy] of OFFSETS) {
+      const nx = cx + dx;
+      const ny = cy + dy;
 
-      [x - 2, y + 1],
-      [x - 2, y - 1],
-      [x - 1, y + 2],
-      [x - 1, y - 2]
-    );
+      if (nx >= 0 && nx < 8 && ny >= 0 && ny < 8 && !visited.has(`${nx},${ny}`)) {
+        visited.add(`${nx},${ny}`);
+        queue.push([[nx, ny], [...path, [nx, ny]]]);
+      }
+    }
   }
 }
 
